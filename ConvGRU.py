@@ -14,14 +14,15 @@ class ConvGRUCell(nn.Module):
         self.conv_xh = nn.Conv2d(in_channels=in_channels, out_channels=hidden_channels, kernel_size=3, stride=1, padding="same", bias=True)
         self.conv_hh = nn.Conv2d(in_channels=hidden_channels, out_channels=hidden_channels, kernel_size=3, stride=1, padding="same", bias=True)
 
+        self.bn = nn.BatchNorm2d(hidden_channels)
         self.act = nn.Sigmoid()
         self.tanh = nn.Tanh()
 
     def forward(self, xt, ht1):
 
-        Rt = self.act(self.conv_xr(xt) + self.conv_hr(ht1))
-        Zt = self.act(self.conv_xz(xt) + self.conv_hz(ht1))
-        HTt = self.tanh(self.conv_xh(xt) + self.conv_hh(Rt * ht1))
+        Rt = self.act(self.bn(self.conv_xr(xt) + self.conv_hr(ht1)))
+        Zt = self.act(self.bn(self.conv_xz(xt) + self.conv_hz(ht1)))
+        HTt = self.tanh(self.bn(self.conv_xh(xt) + self.conv_hh(Rt * ht1)))
         Ht = Zt * ht1 + (1 - Zt) * HTt
         return Ht
     

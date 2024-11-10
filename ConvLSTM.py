@@ -17,6 +17,7 @@ class ConvLSTMCell(nn.Module):
         self.conv_xc = nn.Conv2d(in_channels=in_channels, out_channels=hidden_channels, kernel_size=3, stride=1, padding="same", bias=True)
         self.conv_hc = nn.Conv2d(in_channels=hidden_channels, out_channels=hidden_channels, kernel_size=3, stride=1, padding="same", bias=True)
 
+        self.bn = nn.BatchNorm2d(hidden_channels)
         self.act = nn.Sigmoid()
         self.tanh = nn.Tanh()
 
@@ -28,10 +29,10 @@ class ConvLSTMCell(nn.Module):
 
     def forward(self, xt, ht1, ct1):
 
-        It = self.act( self.conv_xi(xt) + self.conv_hi(ht1) )
-        Ft = self.act( self.conv_xf(xt) + self.conv_hf(ht1) )
-        Ot = self.act( self.conv_xo(xt) + self.conv_ho(ht1) )
-        CTt = self.tanh( self.conv_xc(xt) + self.conv_hc(ht1) )
+        It = self.act(self.bn(self.conv_xi(xt) + self.conv_hi(ht1)))
+        Ft = self.act(self.bn(self.conv_xf(xt) + self.conv_hf(ht1)))
+        Ot = self.act(self.bn(self.conv_xo(xt) + self.conv_ho(ht1)))
+        CTt = self.tanh(self.bn(self.conv_xc(xt) + self.conv_hc(ht1)))
 
         Ct = Ft*ct1 + It*CTt 
         Ht = Ot*self.tanh(Ct)
