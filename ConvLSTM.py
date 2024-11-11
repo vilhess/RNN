@@ -57,8 +57,8 @@ class ConvLSTM(nn.Module):
 
     def forward(self, x):
         batch, times, _, height, width = x.size()
-        h = [torch.zeros(batch, self.hidden_channels, height, width) for _ in range(self.num_layers)]
-        c = [torch.zeros(batch, self.hidden_channels, height, width) for _ in range(self.num_layers)]
+        h = [torch.zeros(batch, self.hidden_channels, height, width).to(x.device) for _ in range(self.num_layers)]
+        c = [torch.zeros(batch, self.hidden_channels, height, width).to(x.device) for _ in range(self.num_layers)]
 
         for t in range(times):
             xt = x[:, t, :, :, :]

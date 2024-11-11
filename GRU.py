@@ -46,7 +46,7 @@ class GRU(nn.Module):
 
     def forward(self, x):
         batch, window, _ = x.size()
-        h = [torch.zeros(batch, self.hidden_dim) for _ in range(self.num_layers)]
+        h = [torch.zeros(batch, self.hidden_dim).to(x.device) for _ in range(self.num_layers)]
 
         for t in range(window):
             xt = x[:, t, :]
